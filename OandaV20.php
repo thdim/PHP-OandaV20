@@ -122,9 +122,22 @@ class OandaV20 {
   /* ###### Instrument Endpoints ###### 
    * https://developer.oanda.com/rest-live-v20/instrument-ep/ */
   
-  public function getInstrumentCandles($instrument) {
-    $endPoint = "/v3/instruments/".$instrument."/candles";
-    /* TODO Add extra query params (count, from, to, etc) */
+   public function getInstrumentCandles($instrument, $queryArr) {
+    // String to hold the extra queries data
+    $queryUrl = '';
+
+    if (!empty($queryArr)) {
+      // Loop in Array
+      foreach ($queryArr as $name => $value) {
+        // array_key_first needs PHP >= 7.3.0
+        if ($name === array_key_first($queryArr))
+          $queryUrl .= '?'.$name.'='.$value;
+        else
+          $queryUrl .= '&'.$name."=".$value;
+      }
+    }
+
+    $endPoint = "/v3/instruments/".$instrument."/candles".$queryUrl;
     $fullUrl = $this->base_url . $endPoint;
     $result = $this->makeCall("GET", $this->headers, $fullUrl);
     
