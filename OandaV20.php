@@ -12,20 +12,27 @@ class OandaV20 {
   // Set properties
   private $base_url;
   private $access_token;
+  private $accountID; 
   private $headers = [
     "Accept-Datetime-Format: RFC3339",   // Replace "RFC3339" with "UNIX" for unix timestamps
   ];
 
-  public function __construct($is_production, $access_token) {
+  // Constructor
+  public function __construct($is_production, $access_token, $accountID = '') {
     try {
       $this->base_url = ($is_production == true) ? 'https://api-fxtrade.oanda.com' : 'https://api-fxpractice.oanda.com'; 
       $this->access_token = $access_token;
-      
+      $this->accountID = $accountID;
     } catch (Exception $e) {
       print $e->getMessage() . "\n";
     }
 
     $this->headers[] = "Authorization: Bearer " . $this->access_token; // Authentication header
+  }
+
+  // Methods
+  public function setAccountID($accountID) {
+    $this->accountID = $accountID;
   }
 
   /**
@@ -88,24 +95,24 @@ class OandaV20 {
     return $result;
   }
 
-  public function getAccount($accountID) {
-    $endPoint = "/v3/accounts/".$accountID;
+  public function getAccount() {
+    $endPoint = "/v3/accounts/".$this->accountID;
     $fullUrl = $this->base_url . $endPoint;
     $result = $this->makeCall("GET", $this->headers, $fullUrl);
     
     return $result;
   }
 
-  public function getAccountSummary($accountID) {
-    $endPoint = "/v3/accounts/".$accountID."/summary";
+  public function getAccountSummary() {
+    $endPoint = "/v3/accounts/".$this->accountID."/summary";
     $fullUrl = $this->base_url . $endPoint;
     $result = $this->makeCall("GET", $this->headers, $fullUrl);
     
     return $result;
   }
 
-  public function getAccountInstruments($accountID) {
-    $endPoint = "/v3/accounts/".$accountID."/instruments";
+  public function getAccountInstruments() {
+    $endPoint = "/v3/accounts/".$this->accountID."/instruments";
     $fullUrl = $this->base_url . $endPoint;
     $result = $this->makeCall("GET", $this->headers, $fullUrl);
     
